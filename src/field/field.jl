@@ -17,15 +17,20 @@ mutable struct Field{T,F1,F2}
     kr::T                                   # current value of `k ⋅ r`
     E::SVector{3, Complex{T}}               # current value of the field
     ϕ::T                                    # phase of laser
+    function Field(k, ϵ, ω, s_scalar_func)
+        _zero = zero(Float64)
+        new{Float64, typeof(ϵ), typeof(s_scalar_func)}(k, ϵ, SVector(_zero,_zero,_zero), ω, 1, s_scalar_func, 0., _zero, _zero, _zero, SVector(_zero,_zero,_zero), 0)
+    end
+    function Field(k, ϵ, ω, s_max, s_scalar_func, ϕ)
+        _zero = zero(Float64)
+        new{Float64, typeof(ϵ), typeof(s_scalar_func)}(k, ϵ, SVector(_zero,_zero,_zero), ω, s_max, s_scalar_func, 0., _zero, _zero, _zero, SVector(_zero,_zero,_zero), ϕ)
+    end
+    function Field(T, k, ϵ, ω, s_max, s_scalar_func, ϕ)
+        _zero = zero(T)
+        new{T, typeof(ϵ), typeof(s_scalar_func)}(k, ϵ, SVector(_zero,_zero,_zero), ω, s_max, s_scalar_func, 0., _zero, _zero, _zero, SVector(_zero,_zero,_zero), ϕ)
+    end
 end
-function Field(k, ϵ, ω, s_max, s_scalar_func, ϕ)
-    _zero = zero(Float64)
-    Field{Float64, typeof(ϵ), typeof(s_scalar_func)}(k, ϵ, SVector(_zero,_zero,_zero), ω, s_max, s_scalar_func, 0., _zero, _zero, _zero, SVector(_zero,_zero,_zero), ϕ)
-end
-function Field(T, k, ϵ, ω, s_max, s_scalar_func, ϕ)
-    _zero = zero(T)
-    Field{T, typeof(ϵ), typeof(s_scalar_func)}(k, ϵ, SVector(_zero,_zero,_zero), ω, s_max, s_scalar_func, 0., _zero, _zero, _zero, SVector(_zero,_zero,_zero), ϕ)
-end
+
 export Field
 
 function update_fields!(fields::StructVector{Field{T,F1,F2}}, r, t) where {T,F1,F2}
