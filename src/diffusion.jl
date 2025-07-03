@@ -3,7 +3,7 @@ export compute_diffusion
 """
     Compute the z component of the force and store the result in `p.f_z`.
 """
-function compute_fz(prob)
+function compute_fz(prob, coord_idx=3)
 
     p = prob.p
     
@@ -11,7 +11,7 @@ function compute_fz(prob)
     kEs = p.kEs
     d_ge = p.d_ge
 
-    k = 3
+    k = coord_idx
     @turbo for j ∈ axes(d_ge,2)
         for i ∈ axes(d_ge,1)
             f_z_ij_re = zero(eltype(f_z.re))
@@ -47,12 +47,11 @@ export compute_fz
 
     This implementation follows reference [ref].
 """
-function compute_diffusion(prob, prob_func, n_avgs, t_end, τ_total, n_times, channel)
+function compute_diffusion(prob, prob_func, n_avgs, t_end, τ_total, n_times, channel, coord_idx=3)
     
     n_states = prob.p.n_states
     n_excited = prob.p.n_excited
     F_idx = prob.p.F_idx
-    coord_idx = 3
 
     # data arrays
     Cs = zeros(Float64, n_times)
@@ -108,7 +107,7 @@ function compute_diffusion(prob, prob_func, n_avgs, t_end, τ_total, n_times, ch
         ϕ.re .= ut[1:16]
         ϕ.im .= ut[17:32]
 
-        compute_fz(sol_ϕ.prob)
+        compute_fz(sol_ϕ.prob, coord_idx)
         Heisenberg!(sol_ϕ.prob.p.sim_params.f_z, sol_ϕ.prob.p.eiω0ts)
         f = sol_ϕ.prob.p.sim_params.f_z
 
